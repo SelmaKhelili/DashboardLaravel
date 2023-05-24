@@ -13,69 +13,109 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 ## How to Use This Code
 
-To use this code, follow the steps below:
+To use thsi code please follow the steps below ;)
 
 ### Prerequisites
 
 - Make sure you have [Composer](https://getcomposer.org/) installed.
 - Ensure you have a compatible version of PHP installed (check Laravel documentation for requirements).
-# Project Title
-
-One Paragraph of project description goes here
+- Ensure that you have [Xamp](https://www.apachefriends.org/download.html) installed
+- If you are using Mac OS check the documentation for it and after you are set for Laravel you can start with Step 4
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+After installing composer you can learn below how to run the this project :
 
-### Prerequisites
+## First install node 
+You can use this website [node](https://nodejs.org/en/download) .
 
-What things you need to install the software and how to install them
+Or you can use the following command :
+```
+npm install -g npm
+```
+## Checking your version of npm and Node.js
+To see if you already have Node.js and npm installed and check the installed version, run the following commands:
+```
+node -v
+npm -v
+```
+## Step 2: Install Laravel
+Using Composer, you can install Laravel by running the following command in your terminal:
+```
+composer global require laravel/installer
+```
+## Step 3: Open your IDE and create a new laravel project
+
+To create a new laravel project using composer run the following command:
+```
+composer create-project --prefer-dist laravel/laravel <project-name>
+```
+## Step 4: 
+
+-Copy the views folder of this project into your local views.
+- Copy the routes/Web.php file inside your local Web.php
+
+### Create the migrations 
+
+Run the following command
 
 ```
-Give examples
+php artisan make:migration create_bookings_table
 ```
+After creating the migration successfully copy the migration table from database/migrations/create_bookings_table to the corresponding file in your project.
 
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
+Then run the following command:
 ```
-Give the example
+php artisan migrate
 ```
+This will create all your tables in the database.
 
-And repeat
+### Create the controller 
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+Run the following command
 
 ```
-Give an example
+php artisan make:controller CalendarController
 ```
+After creating the controller successfully copy its functions from app/HTTPS/Controllers/CalendarControler.php to the corresponding file in your project
 
-### And coding style tests
+### Create the model 
 
-Explain what these tests test and why
+Run the following command
 
 ```
-Give an example
+php artisan make:model Booking
 ```
+After creating the model successfully copy the model fillables from app/Models/Booking.php to the corresponding file in your project
 
-## Deployment
+### Runing the code
 
-Add additional notes about how to deploy this on a live system
+#Open three terminales
+make sure you are in the directory of your laravel project
+On the first one run :
+```
+composer update
+```
+then
+```
+npm i vite
+```
+finally 
+```
+npm run dev
+```
+Leave it open and run on the second :
+```
+php artisan migrate:refresh
+```
+if you notice that your tables disappeared from the database then run it a second time.
+
+On the third terminal run this command :
+```
+php artisan serve
+```
+You will get a url like this http://127.0.0.1:8000/ so click on it to view your project 
+Remember taht you can only view your routes so in this case add calendar/index to that URL to enter the view of the calendar
 
 ## Built With
 
