@@ -90,9 +90,9 @@ After creating the model successfully copy the model fillables from app/Models/B
 
 ### Runing the code
 
-#Open three terminales
+# Open three terminales
 make sure you are in the directory of your laravel project
-On the first one run :
+# On the first one run :
 ```
 composer update
 ```
@@ -104,7 +104,8 @@ finally
 ```
 npm run dev
 ```
-Leave it open and run on the second :
+Leave it open 
+# Run on the second one:
 ```
 php artisan migrate:refresh
 ```
@@ -114,7 +115,8 @@ On the third terminal run this command :
 ```
 php artisan serve
 ```
-You will get a url like this http://127.0.0.1:8000/ so click on it to view your project 
+You will get a url like that looks like this http://127.0.0.1:8000/ 
+Click on the URL you see in your terminal to view your project 
 Remember taht you can only view your routes so in this case add calendar/index to that URL to enter the view of the calendar
 
 ## Built With
