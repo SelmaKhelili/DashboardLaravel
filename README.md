@@ -52,7 +52,7 @@ composer create-project --prefer-dist laravel/laravel <project-name>
 ```
 ## Step 4: 
 
--Copy the views folder of this project into your local views.
+- Copy the views folder of this project into your local views.
 - Copy the routes/Web.php file inside your local Web.php
 
 ### Create the migrations 
