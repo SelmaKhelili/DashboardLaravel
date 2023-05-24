@@ -111,7 +111,7 @@ php artisan migrate:refresh
 ```
 if you notice that your tables disappeared from the database then run it a second time.
 
-On the third terminal run this command :
+## On the third terminal run this command :
 ```
 php artisan serve
 ```
