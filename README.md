@@ -117,7 +117,8 @@ php artisan serve
 ```
 You will get a url like that looks like this http://127.0.0.1:8000/ 
 Click on the URL you see in your terminal to view your project 
-Remember taht you can only view your routes so in this case add calendar/index to that URL to enter the view of the calendar
+
+* Remember that you can only view your routes so in this case add calendar/index to that URL to enter the view of the calendar
 
 ## Conclusion
 Thank you for reading and good luck !
