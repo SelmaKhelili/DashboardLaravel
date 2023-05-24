@@ -116,6 +116,7 @@ if you notice that your tables disappeared from the database then run it a secon
 php artisan serve
 ```
 You will get a url like that looks like this http://127.0.0.1:8000/ 
+
 Click on the URL you see in your terminal to view your project 
 
 * Remember that you can only view your routes so in this case add calendar/index to that URL to enter the view of the calendar
