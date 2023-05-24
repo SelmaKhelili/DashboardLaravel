@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bookings', function (Blueprint $table) {
+            $table->integer('ID')->autoIncrement();
             $table->string('title');
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->timestamps();
-            $table->primary(["title", "start_date","end_date"]);
         });
     }
 

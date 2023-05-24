@@ -14,6 +14,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
 
     <body>
@@ -25,9 +26,9 @@
         <div class="container">
             <div c8lass="row">
                 <div class="col-12">
-                    <h3 class="text-center mt-5">Dashboard- Calendar</h3>
+                    <h2 class="text-center mt-5">Dashboard  -   Calendar</h2>
                     <div class="col-md-11 offset-1 mt-5 mb-5">
-    
+
                         <div id="calendar">
     
                         </div>
@@ -38,7 +39,7 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
 
-        <script>
+<script>
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
@@ -62,6 +63,7 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
                 </div>\
                 <div class="modal-body">\
+                    <h4  class="fs-5">Enter the title of your event</h4>\
                   <input type="text" class="form-control" id="title" >\
                   <span id="titleError" class="text-danger"></span>\
                 </div>\
@@ -93,16 +95,90 @@
                             error:function(error)
                             {
                                 if(error.responseJSON.errors) {
-                                    //$('#titleError').html(error.responseJSON.errors.title);
+                                    console.log(error.responseText);
                                 }
                             },
                         });
                     });
                 },
+              
+                editable:true,
+                eventDrop: function(event) {
+                var id = event.id;
+                var start_date = moment(event.start).format('YYYY-MM-DD');
+                var end_date = moment(event.end).format('YYYY-MM-DD');
+                $.ajax({
+                    url:"{{ route('calendar.update', '') }}" + '/' + id,
+                    type: "PATCH", 
+                    dataType: 'json',
+                    data: { start_date, end_date },
+                    success: function(response) {
+                        Swal.fire({
+                            title: 'Event updated successfully !',
+                            width: 600,
+                            padding: '3em',
+                            color: '#716add',
+                            background: '#fff url(/images/trees.png)',
+                            backdrop: `
+                                rgba(0,0,123,0.4)
+                                url("/assets/img/gif/nyan-cat.gif")
+                                left top
+                                no-repeat
+                            `
+                            })
+                           
+                        //swal('Good job!','Event updated successfully','success');
+                    },
+                    error: function(error) {
+                        console.log(error)
+                    },
+                });
+            },
+
+            eventClick:function(event)
+            {
+                    var id = event.id;
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                     $.ajax({
+                    url:"{{ route('calendar.destroy', '') }}" + '/' + id,
+                    type: "DELETE", 
+                    dataType: 'json',
+                    success: function(response) {
+                      
+                    },
+                    error: function(error) {
+                        console.log(error)
+                    },
+
+            });
+                    Swal.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success'
+                    )
+                    $('#calendar').fullCalendar('renderEvent', {
+                                    'title': response.title,
+                                    'start' : response.start_date,
+                                    'end'  : response.end_date
+                                });
+  }
+})
+        },
+
+
             })
         })
             
             
-                </script>
+ </script>
     </body>
 </html>
