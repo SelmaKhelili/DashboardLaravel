@@ -14,13 +14,13 @@ class CalendarController extends Controller
     $events = array();
     $bookings = Booking::all();
     foreach($bookings as $booking) {
-   
+        
         $events[] = [
             'id'=> $booking->ID,
             'title' => $booking->title,
             'start' => $booking->start_date,
             'end' => $booking->end_date,
-            'color' => $booking->Color
+           
         ];
     }
     return view('calendar.index', ['events' => $events]);
@@ -35,14 +35,12 @@ class CalendarController extends Controller
             'title' => $request->title,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'Color' => $request->color
         ]);
         return response()->json([
             'id' => $booking->ID,
             'start_date' => $booking->start_date,
             'end_date' => $booking->end_date,
             'title' => $booking->title,
-            'color' => $booking->Color ? $booking->Color: '',
 
         ]);
     }

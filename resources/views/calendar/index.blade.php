@@ -39,146 +39,181 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
 
-<script>
-        $(document).ready(function() {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        <script>
+            $(document).ready(function() {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+        
+                var booking = @json($events);
+        
+                $('#calendar').fullCalendar({
+                    header: {
+                        left: 'prev, next today',
+                        center: 'title',
+                        right: 'month, agendaWeek, agendaDay',
+                    },
+                    events: booking,
+                    selectable: true,
+                    selectHelper: true,
+                    select: function(start, end, allDays) {
+                        document.getElementById('md').innerHTML = '<div class="modal-content">\
+                            <div class="modal-header">\
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Event title</h1>\
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
+                            </div>\
+                            <div class="modal-body">\
+                                <h4 class="fs-5">Enter the title of your event</h4>\
+                                <input type="text" class="form-control" id="title">\
+                                <span id="titleError" class="text-danger"></span>\
+                                <h4 class="fs-5">Google Meet Link</h4>\
+                                <input type="text" class="form-control" id="meetLink" name= "meetLink"readonly>\
+                                <button type="button" class="btn btn-primary mt-2" id="copyBtn">Copy Link</button>\
+                            </div>\
+                            <div class="modal-footer">\
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>\
+                                <button type="button" class="btn btn-primary" id="saveBtn">Save Event</button>\
+                            </div>\
+                        </div>';
+                function generateMeetLink() {
+                        // Generate a random string to use as a unique identifier
+                        var uniqueId = Math.random().toString(36).substr(2, 10);
+
+                        // Construct the Google Meet link with the unique identifier
+                        var meetLink = "https://meet.google.com/" + uniqueId;
+
+                        return meetLink;
                 }
-            });
-            var booking = @json($events);
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev, next today',
-                    center: 'title',
-                    right: 'month, agendaWeek, agendaDay',
-                },
-                events: booking,
-                selectable: true,
-                selectHelper: true,
-                select: function(start, end, allDays) {
-                    document.getElementById('md').innerHTML = '<div class="modal-content">\
-                <div class="modal-header">\
-                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Event title</h1>\
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
-                </div>\
-                <div class="modal-body">\
-                    <h4  class="fs-5">Enter the title of your event</h4>\
-                  <input type="text" class="form-control" id="title" >\
-                  <span id="titleError" class="text-danger"></span>\
-                </div>\
-                <div class="modal-footer">\
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>\
-                  <button type="button" class="btn btn-primary" id="saveBtn">Save Event</button>\
-                </div>\
-              </div>\
-            </div>'
-                    $('#bookingModal').modal('toggle');
-                    $('#saveBtn').click(function() {
-                        var title = $('#title').val();
-                        var start_date = moment(start).format('YYYY-MM-DD');
-                        var end_date = moment(end).format('YYYY-MM-DD');
+                        // Generate the Google Meet link
+                       var meetLink = generateMeetLink();
+
+                        // Set the meet link value and enable copying
+                        $('#meetLink').val(meetLink);
+                        $('#bookingModal').modal('toggle');
+        
+                        // Add a click event listener to the copy button
+                        $('#copyBtn').click(function() {
+
+                            // Select the meet link input
+                            var meetLinkInput = document.getElementById('meetLink');
+                            // Copy the meet link value to the clipboard
+                            meetLinkInput.select();
+                            document.execCommand('copy');
+                        });
+        
+                        $('#saveBtn').click(function() {
+                            var title = $('#title').val();
+                            var link = $('#meetLink').val();
+                            var start_date = moment(start).format('YYYY-MM-DD');
+                            var end_date = moment(end).format('YYYY-MM-DD');
+        
+                            $.ajax({
+                                url: "{{ route('calendar.store') }}",
+                                type: "POST",
+                                dataType: 'json',
+                                data: { title, link, start_date, end_date },
+                                success: function(response) {
+                                    $('#bookingModal').modal('hide');
+                                    $('#calendar').fullCalendar('renderEvent', {
+                                        'title': response.title,
+                                        'start': response.start_date,
+                                        'end': response.end_date,
+                                        
+                                    });
+                                },
+                                error: function(error) {
+                                    if (error.responseJSON.errors) {
+                                        console.log(error.responseText);
+                                    }
+                                },
+                            });
+                        });
+                    },
+        
+                    editable: true,
+                    eventDrop: function(event) {
+                        var id = event.id;
+                        var start_date = moment(event.start).format('YYYY-MM-DD');
+                        var end_date = moment(event.end).format('YYYY-MM-DD');
+        
                         $.ajax({
-                            url:"{{ route('calendar.store') }}",
-                            type:"POST",
-                            dataType:'json',
-                            data:{ title, start_date, end_date  },
-                            success:function(response)
-                            {
-                                $('#bookingModal').modal('hide')
-                                $('#calendar').fullCalendar('renderEvent', {
-                                    'title': response.title,
-                                    'start' : response.start_date,
-                                    'end'  : response.end_date
+                            url: "{{ route('calendar.update', '') }}" + '/' + id,
+                            type: "PATCH",
+                            dataType: 'json',
+                            data: { start_date, end_date },
+                            success: function(response) {
+                                Swal.fire({
+                                    title: 'Event updated successfully!',
+                                    width: 600,
+                                    padding: '3em',
+                                    color: '#716add',
+                                    background: '#fff url(/images/trees.png)',
+                                    backdrop: `
+                                        rgba(0,0,123,0.4)
+                                        url("/assets/img/gif/nyan-cat.gif")
+                                        left top
+                                        no-repeat
+                                    `
                                 });
                             },
-                            error:function(error)
-                            {
-                                if(error.responseJSON.errors) {
-                                    console.log(error.responseText);
-                                }
+                            error: function(error) {
+                                console.log(error);
                             },
                         });
-                    });
-                },
-              
-                editable:true,
-                eventDrop: function(event) {
-                var id = event.id;
-                var start_date = moment(event.start).format('YYYY-MM-DD');
-                var end_date = moment(event.end).format('YYYY-MM-DD');
-                $.ajax({
-                    url:"{{ route('calendar.update', '') }}" + '/' + id,
-                    type: "PATCH", 
-                    dataType: 'json',
-                    data: { start_date, end_date },
-                    success: function(response) {
-                        Swal.fire({
-                            title: 'Event updated successfully !',
-                            width: 600,
-                            padding: '3em',
-                            color: '#716add',
-                            background: '#fff url(/images/trees.png)',
-                            backdrop: `
-                                rgba(0,0,123,0.4)
-                                url("/assets/img/gif/nyan-cat.gif")
-                                left top
-                                no-repeat
-                            `
-                            })
-                           
-                        //swal('Good job!','Event updated successfully','success');
                     },
-                    error: function(error) {
-                        console.log(error)
+        
+                    eventClick: function(event) {
+                        var id = event.id;
+        
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: "{{ route('calendar.destroy', '') }}" + '/' + id,
+                                    type: "DELETE",
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        $('#calendar').fullCalendar('renderEvent', {
+                                            'title': response.title,
+                                            'start': response.start_date,
+                                            'end': response.end_date
+                                        });
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Your file has been deleted.',
+                                            'success'
+                                        );
+                                    },
+                                    error: function(error) {
+                                        console.log(error);
+                                    },
+                                });
+                            }
+                        });
+                    },
+        
+                    selectAllow: function(event) {
+                        return moment(event.start).utcOffset(false).isSame(moment(event.end).subtract(1, 'second').utcOffset(false), 'day');
                     },
                 });
-            },
-
-            eventClick:function(event)
-            {
-                    var id = event.id;
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                    if (result.isConfirmed) {
-                     $.ajax({
-                    url:"{{ route('calendar.destroy', '') }}" + '/' + id,
-                    type: "DELETE", 
-                    dataType: 'json',
-                    success: function(response) {
-                      
-                    },
-                    error: function(error) {
-                        console.log(error)
-                    },
-
+        
+                $("#bookingModal").on("hidden.bs.modal", function() {
+                    $('#saveBtn').unbind();
+                });
+        
+                $('.fc').css('background-color', '#FFF6FD');
+                $('.fc-event').css('height', '30px');
             });
-                    Swal.fire(
-                    'Deleted!',
-                    'Your file has been deleted.',
-                    'success'
-                    )
-                    $('#calendar').fullCalendar('renderEvent', {
-                                    'title': response.title,
-                                    'start' : response.start_date,
-                                    'end'  : response.end_date
-                                });
-  }
-})
-        },
-
-
-            })
-        })
-            
-            
- </script>
+        </script>
+        
     </body>
 </html>

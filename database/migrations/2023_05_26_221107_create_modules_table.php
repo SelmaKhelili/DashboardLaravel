@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->integer('ID')->autoIncrement();
-            $table->string('title');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-        
+        Schema::create('modules', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('description')->default('');;
             $table->timestamps();
+
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bookings');
+        Schema::dropIfExists('modules');
     }
 };

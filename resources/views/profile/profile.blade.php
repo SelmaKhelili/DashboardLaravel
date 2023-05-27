@@ -20,43 +20,35 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <link
-      rel="apple-touch-icon"
-      sizes="76x76"
-      href="../assets/img/apple-icon.png"
-    />
-    <link rel="icon" type="image/png" href="../assets/img/favicon.png" />
-    <title>Dashboard -Profile</title>
-    <!--     Fonts and icons     -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"
-      rel="stylesheet"
-    />
-    <!-- Nucleo Icons -->
-    <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
-    <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
-    <script
-      src="https://kit.fontawesome.com/42d5adcbca.js"
-      crossorigin="anonymous"
-    ></script>
-    <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
-    <!-- CSS Files -->
-    <link
-      id="pagestyle"
-      href="../assets/css/soft-ui-dashboard.css?v=1.0.7"
-      rel="stylesheet"
-    />
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}" />
+<link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}" />
+<title>Dashboard - Profile</title>
+<!-- Fonts and icons -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+<!-- Nucleo Icons -->
+<link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+<link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+<!-- Font Awesome Icons -->
+<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+<link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+<!-- CSS Files -->
+<link id="pagestyle" href="{{ asset('assets/css/soft-ui-dashboard.css?v=1.0.7') }}" rel="stylesheet" />
+
+    <!-- Ajax-->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <!--Chart-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Nepcha Analytics (nepcha.com) -->
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-    <script
-      defer
-      data-site="YOUR_DOMAIN_HERE"
-      src="https://api.nepcha.com/js/nepcha-analytics.js"
-    ></script>
+    <script defer data-site="YOUR_DOMAIN_HERE" src="{{ asset('js/nepcha-analytics.js') }}"></script>
+
   </head>
 
   <body class="g-sidenav-show bg-gray-100">
+
+    
     <aside
       class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3"
       id="sidenav-main"
@@ -71,7 +63,7 @@
           class="navbar-brand m-0"
           href=" https://demos.creative-tim.com/soft-ui-dashboard/pages/dashboard.html "
           target="_blank"
-        >
+        >k
           <img
             src="../assets/img/logo-ct-dark.png"
             class="navbar-brand-img h-100"
@@ -749,27 +741,71 @@
           <div class="col-12 col-xl-4">
             <div class="card h-100">
               <div class="card-body p-3">
-                @if($profileViews->isNotEmpty())
-                @foreach($profileViews as $key => $value)
-                    <p>{{ $key }}: {{ $value->count() }}</p>
-                @endforeach
-            @else
-                <p>No profile views yet.</p>
-            @endif
+                <h2>Teacher Information</h2>
+                <p>Name: {{ $teacher['Name'] }}</p>
+                <p>Surname: {{ $teacher['Surname'] }}</p>
+                <p>Phone Number: {{ $teacher['PhoneNumber'] }}</p>
               </div>
             </div>
           </div>
           <div class="col-12 col-xl-4">
             <div class="card h-100">
               <div class="card-body p-3">
-                <!--Here used to be profile information -->
-              </div>
+                <h2>Modules Taught</h2>
+                <table class="table table-striped">
+                  <thead>
+                      <tr>
+                          <th scope="col">Module Name</th>
+                          <th scope="col">Description</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      @foreach ($modules as $module)
+                          <tr>
+                              <td>{{ $module->name }}</td>
+                              <td>{{ $module->description }}</td>
+                          </tr>
+                      @endforeach
+                  </tbody>
+              </table>
+              
+                <button class="btn btn-primary" id="AddModule">Add Module</button>
+                <button class="btn btn-primary" id="EditModule">Edit Modules</button>
+
+                <form class="AddModules" aria-hidden="true" style="display: none;">
+                  
+                    <h5 class="modal-title" id="ModuleName">Enter the name of your module</h5>
+                    <input type="text" class="form-control" id="ModuleNameInput" name="ModuleNameInput"required>
+                    <h5 class="modal-title" id="ModuleDescription">Enter the description of your module</h5>
+                    <input type="text" class="form-control" id="ModuleDescriptionInput" name="ModuleDescriptionInput" required>
+                    <button  class="btn btn-primary" id="cancelbtn">cancel</button>
+                    <input type="submit" class="btn btn-primary" id="savebtn" data-teacher-id="{{ $teacher['id'] }}">
+                </form>
+
+                <form class="EditModules" aria-hidden="true" style="display: none;">
+                  <h5 class="modal-title" id="ModuleName">Enter the name of your module</h5>
+                  <input type="text" class="form-control" id="ModuleNameInputPrev" name="ModuleNameInputPrev" required>
+                
+                  <h5 class="modal-title" id="NewModuleName">Enter the new name of your module</h5>
+                  <input type="text" class="form-control" id="ModuleNameInputUpdate" name="ModuleNameInputUpdate" required>
+                
+                  <h5 class="modal-title" id="ModuleDescription">Enter the new description of your module</h5>
+                  <input type="text" class="form-control" id="ModuleDescriptionInputUpdate" name="ModuleDescriptionInputUpdate">
+                  <button class="btn btn-primary" id="Cancelbtn">cancel</button>
+                  <input type="submit" class="btn btn-primary Editbtn" data-teacher-id="{{ $teacher['id'] }}">
+                </form>
+            </div>
             </div>
           </div>
           <div class="col-12 col-xl-4">
             <div class="card h-100">
               <div class="card-body p-3">
-                <!--Here used to be mmessages system -->
+                <!--Here is the plot -->
+                <div class="plot"  style="display: none;">
+                <canvas id="myChart"></canvas>
+                </div>
+                <button class="fetch-chart-data btn btn-primary Editbtn" data-teacher-id="{{ $teacher->id }}">Show Chart</button>
+                <button class="closeChartbtn btn btn-primary Editbtn" data-teacher-id="{{ $teacher->id }}">Close Chart</button>
 
               </div>
             </div>
@@ -1268,9 +1304,186 @@
         Scrollbar.init(document.querySelector("#sidenav-scrollbar"), options);
       }
     </script>
+   <script>
+    
+    $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+          });
+    $("#AddModule").click(function (e) {
+      document.querySelector('.AddModules').style.display = 'block';
+        });
+    
+    
+        $('.AddModules').submit(function (e) {
+        
+        e.preventDefault(); 
+        var ModuleName = $('#ModuleNameInput').val();
+        var ModuleDescription = $('#ModuleDescriptionInput').val();
+        console.log(ModuleName);
+        console.log(ModuleDescription);
+        var id = $('#savebtn').data('teacher-id');
+        console.log(id);
+        $.ajax({
+                            url:"{{ route('module.create','') }}" + '/' + id,
+                            type:"POST",
+                            dataType:'json',
+                            data:{ 
+                              ModuleName: ModuleName, ModuleDescriptionInput: ModuleDescription
+                            },
+                            success:function(response)
+                            {
+                              /*Swal.fire(
+                                'Good job!',
+                                'Event created successfully!',
+                                'success'
+                              )*/
+                              console.log(response);
+                              alert('Event created successfully!')
+                            },
+                            error:function(error)
+                            {
+                                if(error) {
+                                    console.log(error.responseText);
+                                }
+                            },
+                        });
+          });
+
+          $("#cancelbtn").click(function (e) {
+      document.querySelector('.AddModules').style.display = 'none';
+        });
+        $("#Cancelbtn").click(function (e) {
+    
+      document.querySelector('.EditModules').style.display = 'none';
+        });
+
+    $("#EditModule").click(function (e) {
+    // Show the edit module form
+    document.querySelector('.EditModules').style.display = 'block';
+   
+    });
+$('.Editbtn').click(function (e) {
+  e.preventDefault();
+  var id = $(this).data('teacher-id');
+  console.log(id);
+
+  // Get the updated module details from the form
+  var ModuleNamePrev = $('#ModuleNameInputPrev').val();
+  var updatedModuleName = $('#ModuleNameInputUpdate').val();
+  var updatedModuleDescription = $('#ModuleDescriptionInputUpdate').val();
+
+  console.log(updatedModuleName);
+  console.log(updatedModuleDescription);
+
+  // Perform the AJAX request to update the module
+  $.ajax({
+    url: "{{ route('module.update','') }}" + '/' + id,
+    type: "PATCH", // Change the request type to POST
+    dataType: 'json',
+    data: {
+    
+      ModuleName: updatedModuleName, // Use ModuleName instead of updatedModuleName
+      ModuleDescription: updatedModuleDescription, // Use ModuleDescription instead of updatedModuleDescription
+      ModuleNameInputPrev: ModuleNamePrev // Pass the previous module name as well
+    },
+    success: function (response) {
+      // Handle the success response
+      console.log(response);
+      document.querySelector('.EditModules').style.display = 'none';
+      alert('Event updated successfully!');
+    },
+    error: function (error) {
+      // Handle the error response
+      console.log(error.responseText);
+    }
+  });
+});
+$('.closeChartbtn').click(function() {
+    document.querySelector('.plot').style.display = 'none';
+
+});
+$('.fetch-chart-data').click(function() {
+    // Retrieve the teacher ID from the clicked button's data attribute
+    var id = $(this).data('teacher-id');
+    document.querySelector('.plot').style.display = 'block';
+
+    // Use the teacher ID in your AJAX request
+    $.ajax({
+        url: "{{ route('chart','') }}" + '/' + id, // Update the route to fetch chart data
+        type: "GET",
+        dataType: "json",
+        success: function(response) {
+            console.log("Chart data fetched successfully.");
+            var labels = response.labels;
+            var chartData = response.data;
+            renderChart(labels, chartData);
+        },
+        error: function(xhr, status, error) {
+            console.log("Error occurred while fetching chart data.");
+            console.log("Status: " + status);
+            console.log("Error: " + error);
+            console.log(xhr.responseText);
+        }
+    });
+      
+        function renderChart(labels, chartData) {
+            const config = {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Events',
+                        data: chartData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Months of 2023'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Number of Events'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const chart = new Chart(ctx, config);
+
+            // Set the desired dimensions
+            const chartContainer = document.querySelector('.plot');
+            chartContainer.style.width = '100%';
+            chartContainer.style.height = '100%';
+
+            const canvas = chart.canvas;
+            canvas.style.width = chartContainer.offsetWidth + 'px';
+            canvas.style.height = chartContainer.offsetHeight + 'px';
+            canvas.width = chartContainer.offsetWidth;
+            canvas.height = chartContainer.offsetHeight;
+
+            // Update the chart size
+            chart.resize();
+        }
+});
+    </script>
+    
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="../assets/js/soft-ui-dashboard.min.js?v=1.0.7"></script>
   </body>
+
 </html>

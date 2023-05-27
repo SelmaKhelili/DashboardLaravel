@@ -3702,6 +3702,7 @@ fieldset:disabled .btn {
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #cb0c9f;
   --bs-btn-disabled-border-color: #cb0c9f;
+  margin:5px;
 }
 
 .btn-secondary {
@@ -26678,3 +26679,18 @@ pre[class*="language-"] {
 }
 
 /*# sourceMappingURL=dashboard-free.css.map */
+
+/* Teacher Dashboard*/
+.plot 
+{
+  width:100%;
+   height:100%;
+   overflow: scroll;
+ }
+
+
+canvas {
+  overflow: visible;
+  width:"400";
+  height:"400";
+}

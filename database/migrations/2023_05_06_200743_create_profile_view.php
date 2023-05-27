@@ -14,8 +14,6 @@ return new class extends Migration
             Schema::create('profile_view', function (Blueprint $table) {
                 $table->integer('user_id')->unsigned();
                 $table->timestamps();
-           
-
             });
     }
     
